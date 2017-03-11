@@ -17,81 +17,123 @@
 
 import sqlite3
 
+
+def build_dictionary_list(curseur):
+    # Tous les curseurs sont tranférés dans une liste de disctionnaire.
+    liste_article = []
+    for row in curseur:
+        dict_article = {}
+        for i in range(0, len(row)):
+            dict_article[curseur.description[i][0]] = row[i]
+        liste_article.append(dict_article)
+    return liste_article
+
+
 class Database:
     def __init__(self):
         self.connection = None
 
-    #Connection à la base de données
+    # Connection à la base de données
     def get_connection(self):
         if self.connection is None:
             self.connection = sqlite3.connect('db/crm.db')
         return self.connection
 
-    #Fermeture de la connexion de la base de données
+    # Fermeture de la connexion de la base de données
     def disconnect(self):
         if self.connection is not None:
             self.connection.close()
 
-
-    #Requêtes pour la page d'acceuil
+    # Requêtes pour la page d'acceuil
     def get_article_limite(self, limite):
-        cursor = self.get_connection().cursor()
-        cursor.execute(("select id, titre, identifiant, auteur, "
-                       "       date_publication, paragraphe "
-                       "from article "
-                       "where date_publication <= date('now', 'localtime') "
-                       "Order by date_publication "
-                       "limit ?"), (limite))
-        return cursor.fetchall()
-
-    #Requête basé sur une recherche partiel sur le champs titre ou paragraphe
-    def get_recherche_article(self, valeur_recherche):
-        cursor = self.get_connection().cursor()
-        cursor.execute("select titre, date_publication from article "
-                       "where titre like ? or paragraphe like ? "
-                       "Order by date_publication",
-                       ("%"+valeur_recherche+"%", "%"+valeur_recherche+"%"))
-        return cursor.fetchall()
-
-    #Requête basé sur une recherche sur le champs identifiant
-    def get_article(self, identifiant):
         cursor = self.get_connection().cursor()
         cursor.execute("select id, titre, identifiant, auteur, "
                        "       date_publication, paragraphe "
                        "from article "
-                       "where identifiant = '?'",
-                       identifiant)
-        return cursor.fetchall()
+                       "where date_publication <= date('now', 'localtime') "
+                       "Order by date_publication Desc "
+                       "limit ?", ([limite]))
+        return build_dictionary_list(cursor)
 
-    def get_tous_articles(self):
+    # Requête basé sur une recherche partiel sur les champs titre ou paragraphe
+    def get_recherche_article(self, valeur_recherche):
         cursor = self.get_connection().cursor()
-        cursor.execute("select titre, date_publication from article order by titre")
-        return cursor.fetchall()
-        
-    def set_article(self, titre, paragraphe):
-        cursor = self.get_connection().cursor()
-        cursor.execute("update article set titre = ?, paragraphe = ? "
-                       "where article = '?'", (titre, paragraphe))
-        connection.commit()
+        cursor.execute("select titre, date_publication from article "
+                       "where date_publication <= date('now','localtime') and "
+                       "      (titre like ? or paragraphe like ?) "
+                       "Order by date_publication Desc",
+                       ("%"+valeur_recherche+"%", "%"+valeur_recherche+"%"))
+        return build_dictionary_list(cursor)
 
-    def set_nouvel_article(self, id_article, titre, identifiant, auteur,
-                           date_publication, paragraphe):
+    # Requête basé sur une recherche sur le champs identifiant
+    def get_article_identifiant(self, identifiant):
         cursor = self.get_connection().cursor()
-        cursor.execute("insert into article "
-                       "   (id, titre, identifiant, auteur, date_publication, "
-                       "    paragraphe) values(?, ?, ?, ?, ?)",
-                       (id_article, titre, identifiant, auteur, date_publication, paragraphe))
-        connection.commit()
+        cursor.execute("select id, titre, identifiant, auteur, "
+                       "       date_publication, paragraphe "
+                       "from article "
+                       "where date_publication <= date('now','localtime') and "
+                       "      (identifiant = ?)",
+                       [identifiant])
+        return build_dictionary_list(cursor)
 
-    def get_albums_to_delete(self):
+    # UTILISATION UNIQUEMENT POUR LES PAGES D'ADMINISTRATION
+    # Requête qui retourne tous les enregistrements, incluant ceux ayant une
+    # date de publication dans le future.
+    def get_tous_articles_pour_page_admin(self):
         cursor = self.get_connection().cursor()
-        cursor.execute("select titre from album")
-        albums = cursor.fetchall()
-        return [album[0] for album in albums]
+        cursor.execute("select titre, date_publication, identifiant "
+                       "from article order by titre")
+        return build_dictionary_list(cursor)
 
-    def insert_artist_to_delete(self, name):
-        connection = self.get_connection()
-        cursor = connection.cursor()
-        cursor.execute(("insert into artiste(nom, est_solo, nombre_individus) "
-                        "values(?, ?, ?)"), (name, 0, 0))
-        connection.commit()
+    # UTILISATION UNIQUEMENT POUR LES PAGES D'ADMINISTRATION
+    # Requête basé sur une recherche sur le champs identifiant
+    # La date de publication n'est pas prise en considération puisque c'est
+    # pour la section ADMINISTRATEUR
+    def get_article_identifiant_admin(self, identifiant):
+        cursor = self.get_connection().cursor()
+        cursor.execute("select id, titre, identifiant, auteur, "
+                       "       date_publication, paragraphe "
+                       "from article "
+                       "where identifiant = ?",
+                       [identifiant])
+        return build_dictionary_list(cursor)
+
+    # UTILISATION UNIQUEMENT POUR LES PAGES D'ADMINISTRATION
+    # Requête de mise à jour des articles.
+    def set_mise_a_jour_article_admin(self, titre, paragraphe, identifiant):
+        cursor = self.get_connection().cursor()
+        cursor.execute("select id  "
+                       "from article "
+                       "where (identifiant = ?)",
+                       [identifiant])
+        data = cursor.fetchone()
+        if data is None:
+            return 1
+        else:
+            cursor.execute("update article set titre = ?, paragraphe = ? "
+                           "where identifiant = ?",
+                           (titre, paragraphe, identifiant))
+            self.get_connection().commit()
+            return 0
+
+    # UTILISATION UNIQUEMENT POUR LES PAGES D'ADMINISTRATION
+    # Requête d'insertion des nouveaux articles.
+    def set_nouvel_article_admin(self, titre, identifiant, auteur,
+                                 date_publication, paragraphe):
+        connexion = self.get_connection()
+        cursor = connexion.cursor()
+        cursor.execute("select id  "
+                       "from article "
+                       "where (identifiant = ?)",
+                       [identifiant])
+        data = cursor.fetchone()
+        if data is None:
+            cursor.execute("insert into article "
+                           "   (titre, identifiant, auteur, date_publication, "
+                           "    paragraphe) values(?, ?, ?, ?, ?)",
+                           (titre, identifiant, auteur,
+                            date_publication, paragraphe))
+            connexion.commit()
+            return 0
+        else:
+            return 1
