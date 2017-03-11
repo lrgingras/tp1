@@ -1,0 +1,15 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Dictionnaire</title>
+</head>
+<body>
+  <h1>Artistes</h1>
+  <ul>
+    {% for article in articles %}
+        <li>{{ article['id'] }}    {{ article['titre'] }}    {{ article['identifiant'] }}    {{ article['auteur'] }}    {{ article['date_publication'] }}    {{ article['paragraphe'] }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

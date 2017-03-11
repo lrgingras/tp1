@@ -2,17 +2,13 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Liste</title>
+<title>Dictionnaire</title>
 </head>
 <body>
   <h1>Artistes</h1>
   <ul>
     {% for article in articles %}
-        <li>
-        {% for champs in article %}
-            {{ article[champs] }}
-        {% endfor %}
-        </li>
+        <li>{{ article['titre'] }}</li>
     {% endfor %}
   </ul>
 </body>
