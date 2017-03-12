@@ -1,0 +1,21 @@
+layout.html
+404.html
+accueil.html
+article_inexistant.html
+article_existant
+erreur.html
+<identifiant>.html
+resultat_recherche.html
+admin.html
+admin-maj.html
+admin-nouveau.html
+sauvegarde-maj.html
+sauvegarde-nouveau.html
+
+
+
+Principe à (peut-être) mettre en place
+Cookies
+Ecxception (try/except)
+PostRedirectGet
+Valider avec PEP8
