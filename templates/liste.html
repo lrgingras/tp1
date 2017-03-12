@@ -8,11 +8,7 @@
   <h1>Artistes</h1>
   <ul>
     {% for article in articles %}
-        <li>
-        {% for champs in article %}
-            {{ article[champs] }}
-        {% endfor %}
-        </li>
+        <li>{{ article }}</li>
     {% endfor %}
   </ul>
 </body>

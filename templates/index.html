@@ -1,15 +1,29 @@
- <!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Dictionnaire</title>
-</head>
-<body>
-  <h1>Artistes</h1>
-  <ul>
-    {% for article in articles %}
-        <li>{{ article['id'] }}    {{ article['titre'] }}    {{ article['identifiant'] }}    {{ article['auteur'] }}    {{ article['date_publication'] }}    {{ article['paragraphe'] }}</li>
-    {% endfor %}
-  </ul>
-</body>
-</html>
+{% extends "HeaderFooter.html" %}
+{% block content %}
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-preview">
+                    {% for article in articles %}
+                        <li>
+                            <h2 class="titre-article">
+                                <a href="/article/{{ article.id }}">{{ article.titre }}</a>
+                            </h2>
+                            <h3 class="sous-titre-article">
+                                {{ article.datePublication }}
+                            </h3>  
+                        </li>
+                    {% endfor %}
+                </div>
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    <li class="next">
+                        <a href="#">Older Posts &rarr;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
