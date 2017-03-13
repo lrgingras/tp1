@@ -29,6 +29,11 @@ def get_db():
         g._database = Database()
     return g._database
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html', titre="404",
+                           sous_titre="Nous n'avons pas trouvé la page demandée."), 404
+
 @app.route('/')
 def page_accueil():
     limite='5'
@@ -37,12 +42,17 @@ def page_accueil():
                            sous_titre="Pour les amoureux du simple et efficace",
                            articles=articles)
 
-@app.route('/article')
-def page_prog_web_avancee():
-    return render_template('about.html',titre="admin",sous_titre="")
+@app.route('/article/<identifiant>')
+def get_article_identifiant(identifiant):
+    articles = get_db().get_article_identifiant(identifiant)
+    if len(articles) == 0:
+        return render_template('404.html')
+    else:
+        return render_template('liste.html', articles=articles)
 
-@app.route('/recherche/<valeur_recherche>')
-def get_recherche_article(valeur_recherche):
+@app.route('/recherche')
+def get_recherche_article():
+    valeur_recherche = request.args.get('valeur_recherche','')
     articles = get_db().get_recherche_article(valeur_recherche)
     if len(articles) == 0:
         return render_template('aucun_article.html')
