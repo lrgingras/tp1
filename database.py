@@ -58,7 +58,7 @@ class Database:
     # Requête basé sur une recherche partiel sur les champs titre ou paragraphe
     def get_recherche_article(self, valeur_recherche):
         cursor = self.get_connection().cursor()
-        cursor.execute("select titre, date_publication from article "
+        cursor.execute("select titre, date_publication, identifiant from article "
                        "where date_publication <= date('now','localtime') and "
                        "      (titre like ? or paragraphe like ?) "
                        "Order by date_publication Desc",
