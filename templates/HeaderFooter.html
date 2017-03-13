@@ -41,7 +41,12 @@
                     <span class="sr-only">Toggle navigation</span>
                     Menu <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="index.html">Start Bootstrap</a>
+                <a href="https://github.com/lrgingras/tp1">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x"></i>
+                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -51,7 +56,7 @@
                         <a href="/">Acceuil</a>
                     </li>
                     <li>
-                        <a href="/about">à propos</a>
+                        <a href="/about">Admin</a>
                     </li>
                     <li>
                         <a href="/ajout">Ajout d'article</a>
@@ -67,7 +72,7 @@
     </nav>
 	<!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="intro-header" style="background-image: url('img/about-bg.jpg')">
+    <header class="intro-header" style="background-image: url('static/img/background-images.jpg')">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -80,58 +85,33 @@
             </div>
         </div>
     </header>
+    <!-- <div style="background-image: url('static/img/body-background-images.jpg')"> -->
 	{% block content %}{% endblock %}
-	
+	<!-- <div/> -->
 	
 	
 	<footer>
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    <ul class="list-inline text-center">
-                        <li>
-                            <a href="#">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
-                    <p class="copyright text-muted">Copyright &copy; Your Website 2016</p>
+                    <p class="copyright text-muted">Copyright &copy; LRG & LEX 2017</p>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- jQuery -->
-    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="static/vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static/vendor/bootstrap/js/bootstrap.min.js"></script>
 
     <!-- Contact Form JavaScript -->
-    <script src="js/jqBootstrapValidation.js"></script>
-    <script src="js/contact_me.js"></script>
+    <script src="static/js/jqBootstrapValidation.js"></script>
+    <script src="static/js/contact_me.js"></script>
 
     <!-- Theme JavaScript -->
-    <script src="js/clean-blog.min.js"></script>
+    <script src="static/js/clean-blog.min.js"></script>
 
 </body>
 

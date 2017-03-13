@@ -6,23 +6,22 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-preview">
                     {% for article in articles %}
-                        <li>
-                            <h2 class="titre-article">
-                                <a href="/article/{{ article.id }}">{{ article.titre }}</a>
-                            </h2>
+                        <h2 class="titre-article">
+                            <a href="/article/{{ article.identifiant }}"><li>{{ article.titre }}</a>
                             <h3 class="sous-titre-article">
-                                {{ article.datePublication }}
+                                {{ article.date_publication }}
                             </h3>  
                         </li>
+                        </h2>
+                        <hr/>
                     {% endfor %}
                 </div>
-                <hr>
                 <!-- Pager -->
-                <ul class="pager">
+                <!-- <ul class="pager">
                     <li class="next">
                         <a href="#">Older Posts &rarr;</a>
                     </li>
-                </ul>
+                </ul> -->
             </div>
         </div>
     </div>

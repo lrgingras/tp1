@@ -26,12 +26,12 @@ app = Flask(__name__)
 def page_accueil():
     limite='5'
     articles = get_db().get_article_limite(limite)
-    return render_template('index.html', titre="Acceuil",  sous_titre="Pour les amoureux de la simplicité",articles=articles)
+    return render_template('index.html', titre="Acceuil",  sousTitre="Pour les amoureux du simple et efficace",articles=articles)
 
 
 @app.route('/article')
 def page_prog_web_avancee():
-    return render_template('about.html',titre="admin",sous_titre="")
+    return render_template('about.html',titre="admin",sousTitre="")
     
 @app.route('/recherche')
 def recherche():
