@@ -32,7 +32,7 @@ def get_db():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html', titre="404",
-                           sous_titre="Nous n'avons pas trouvé la page demandée."), 404
+                           sous_titre="Cette page est introuvable."), 404
 
 @app.route('/')
 def page_accueil():
@@ -52,13 +52,13 @@ def get_article_identifiant(identifiant):
 
 @app.route('/recherche')
 def get_recherche_article():
-    valeur_recherche = request.args.get('valeur_recherche','')
-    articles = get_db().get_recherche_article(valeur_recherche)
-    if len(articles) == 0:
-        return render_template('aucun_article.html')
-    else:
-        return render_template('liste.html', articles=articles)
-
+   valeur_recherche = request.args.get('valeur_recherche','')
+   articles = get_db().get_recherche_article(valeur_recherche)
+   if len(articles) == 0:
+       return render_template('aucun_article.html', titre="Aucun article",
+                           sous_titre="Aucun article ne correspond avec la recherche.")
+   else:
+       return render_template('liste.html', articles=articles)
 
 @app.teardown_appcontext
 def close_connection(exception):
