@@ -8,10 +8,10 @@
                     {% for article in articles %}
                         <li>
                             <h2 class="titre-article">
-                                <a href="/article/{{ article.id }}">{{ article.titre }}</a>
+                                <a href="/article/{{ article.identifiant }}">{{ article.titre }}</a>
                             </h2>
                             <h3 class="sous-titre-article">
-                                {{ article.datePublication }}
+                                {{ article.date_publication }}
                             </h3>  
                         </li>
                     {% endfor %}
