@@ -1,0 +1,39 @@
+{% extends "HeaderFooter.html" %}
+{% block content %}
+    <!-- Main Content -->
+    <div class="container">
+		<div class="row">
+			<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+				<form action="/recherche" method="get">
+					<input type="text" id="valeur_recherche" name="valeur_recherche" value="{{ valeur_recherche }}" class="col-sm-10"></input>
+					<input type="submit" id="submit" value="recherche"></input>
+				</form>
+			</div>
+		<hr>
+		<div/>
+		<br/>
+		<hr/>
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-preview">
+                    {% for article in articles %}
+                        <h3 class="titre-article">
+                            <a href="/article/{{ article.identifiant }}"><li>{{ article.titre }}</a>
+                            <h4 class="sous-titre-article">
+                                {{ article.date_publication }}
+                            </h4>  
+                        </li>
+                        </h3>
+                        <hr/>
+                    {% endfor %}
+                </div>
+                <!-- Pager -->
+                <!-- <ul class="pager">
+                    <li class="next">
+                        <a href="#">Older Posts &rarr;</a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

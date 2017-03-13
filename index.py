@@ -55,10 +55,11 @@ def get_recherche_article():
    valeur_recherche = request.args.get('valeur_recherche','')
    articles = get_db().get_recherche_article(valeur_recherche)
    if len(articles) == 0:
-       return render_template('aucun_article.html', titre="Aucun article",
+        return render_template('aucun_article.html', titre="Aucun article",
                            sous_titre="Aucun article ne correspond avec la recherche.")
    else:
-       return render_template('liste.html', articles=articles)
+        sous_titre = "{0} articles contiennent votre mot clef : {1}".format(len(articles), valeur_recherche)
+        return render_template('rechercheArticles.html',titre="Recherche", sous_titre=sous_titre, valeur_recherche=valeur_recherche, articles=articles)
 
 @app.teardown_appcontext
 def close_connection(exception):
