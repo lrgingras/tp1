@@ -58,7 +58,7 @@ def close_connection(exception):
 
 @app.route('/admin-nouveau')
 def show_form():
-    return render_template('form.html')
+    return render_template('nouvelArticle.html',titre="Nouvel article")
 
 
 @app.route('/ajout-article', methods=['POST'])
