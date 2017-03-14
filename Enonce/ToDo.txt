@@ -1,16 +1,46 @@
-layout.html
-404.html
-accueil.html
+HeaderFooter.html
+    Il faut retirer "Ajout d'article" sauf pour la page d'administration"
+
+Page d'accueil
+    Demande pour la page d'accueil 
+        "Pour chaque publication, vous devez afficher toutes les données que vous avez sur la publication
+    Donc, il manque "id, identifiant, auteur et paragraphe"
+    Présentement, nous utilisons index.html pour cette section et celle de l'administrateur. Il faut faire une page accueil.html
+    La requête contient déjà tous les champs.
+
+Page article/<identifiant>
+    Valider pourquoi 404 ne fonctionne pas
+
+Page recherche?valeur=abc
+    Tous semblent bons sur cette page
+
+Page admin
+    Lors de la sélection d'un article, il faut le faire pointer sur la page de modification de l'article au lieu de la page article/<identifiant>
+
+Page admin-nouveau
+
+
 article_inexistant.html
+
 article_existant
+
 erreur.html
-<identifiant>.html
+
 resultat_recherche.html
+
 admin.html
+
 admin-maj.html
+
 admin-nouveau.html
+
 sauvegarde-maj.html
+
 sauvegarde-nouveau.html
+
+
+
+404.html
 
 
 
