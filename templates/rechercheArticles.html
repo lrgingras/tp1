@@ -2,6 +2,7 @@
 {% block content %}
     <!-- Main Content -->
     <div class="container">
+        {{% if 'Administration' in titre %}}
 		<div class="row">
 			<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
 				<form action="/recherche" method="get">
@@ -11,6 +12,7 @@
 			</div>
 		<hr>
 		<div/>
+        {{% endif%}}
 		<br/>
 		<hr/>
         <div class="row">
