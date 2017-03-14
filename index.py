@@ -49,7 +49,8 @@ def get_article_identifiant(identifiant):
     if len(articles) == 0:
         return render_template('404.html')
     else:
-        return render_template('liste.html', articles=articles)
+        return render_template('liste.html', titre=articles[0]['titre'],
+                           sous_titre=articles[0]['auteur'] + ' (' + articles[0]['date_publication'] + ')', articles=articles)
 
 @app.route('/recherche')
 def get_recherche_article():
@@ -58,18 +59,12 @@ def get_recherche_article():
     if len(articles) == 0:
         return render_template('aucun_article.html', titre="Aucun article",
                            sous_titre="Aucun article ne correspond avec la recherche.")
-    elif len(articles) == 1:
-        sous_titre = "1 article contient votre mot clef : {0}".format(valeur_recherche)
-        return render_template('index.html', titre="Recherche",
-                           sous_titre=sous_titre,
-                           articles=articles)
-#        return render_template('rechercheArticles.html',titre="Recherche", sous_titre=sous_titre, valeur_recherche=valeur_recherche, articles=articles)
     else:
-        sous_titre = "{0} articles contiennent votre mot clef : {1}".format(len(articles), valeur_recherche)
-#        return render_template('rechercheArticles.html',titre="Recherche", sous_titre=sous_titre, valeur_recherche=valeur_recherche, articles=articles)
-        return render_template('index.html', titre="Recherche",
-                           sous_titre=sous_titre,
-                           articles=articles)
+        if len(articles) == 1:
+            sous_titre = "1 article contient votre mot clef : {0}".format(valeur_recherche)
+        else:
+            sous_titre = "{0} articles contiennent votre mot clef : {1}".format(len(articles), valeur_recherche)
+        return render_template('rechercheArticles.html',titre="Recherche", sous_titre=sous_titre, valeur_recherche=valeur_recherche, articles=articles)
         
         
 @app.teardown_appcontext
