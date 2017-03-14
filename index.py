@@ -16,6 +16,7 @@
 
 from flask import Flask
 from flask import render_template
+from flask import make_response
 from flask import g
 from flask import redirect
 from flask import request
@@ -86,7 +87,7 @@ def page_admin():
 
 @app.route('/admin-nouveau')
 def show_form():
-    return render_template('nouvelArticle.html',titre="Nouvel article")
+    return render_template('article.html',titre="Nouvel article")
 
 
 @app.route('/ajout-article', methods=['POST'])
@@ -153,7 +154,7 @@ def post_form():
         else:
             return render_template('erreur_de_mise_a_jour.html')
     else:
-        response = make_response(render_template('admin-nouveau.html', 
+        response = make_response(render_template('article.html', 
                                                  erreur=dict_validation))
         response.set_cookie("titre", titre)
         response.set_cookie("auteur", auteur)
