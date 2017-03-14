@@ -52,20 +52,37 @@ def get_article_identifiant(identifiant):
 
 @app.route('/recherche')
 def get_recherche_article():
-   valeur_recherche = request.args.get('valeur_recherche','')
-   articles = get_db().get_recherche_article(valeur_recherche)
-   if len(articles) == 0:
+    valeur_recherche = request.args.get('valeur_recherche','')
+    articles = get_db().get_recherche_article(valeur_recherche)
+    if len(articles) == 0:
         return render_template('aucun_article.html', titre="Aucun article",
                            sous_titre="Aucun article ne correspond avec la recherche.")
-   else:
+    elif len(articles) == 1:
+        sous_titre = "1 article contient votre mot clef : {0}".format(valeur_recherche)
+        return render_template('index.html', titre="Recherche",
+                           sous_titre=sous_titre,
+                           articles=articles)
+#        return render_template('rechercheArticles.html',titre="Recherche", sous_titre=sous_titre, valeur_recherche=valeur_recherche, articles=articles)
+    else:
         sous_titre = "{0} articles contiennent votre mot clef : {1}".format(len(articles), valeur_recherche)
-        return render_template('rechercheArticles.html',titre="Recherche", sous_titre=sous_titre, valeur_recherche=valeur_recherche, articles=articles)
-
+#        return render_template('rechercheArticles.html',titre="Recherche", sous_titre=sous_titre, valeur_recherche=valeur_recherche, articles=articles)
+        return render_template('index.html', titre="Recherche",
+                           sous_titre=sous_titre,
+                           articles=articles)
+        
+        
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.disconnect()
+
+@app.route('/admin')
+def page_admin():
+    articles = get_db().get_tous_articles_pour_page_admin()
+    return render_template('index.html', titre="Administration",
+                           sous_titre="Gerez votre site directement de cette page",
+                           articles=articles)
 
 @app.route('/admin-nouveau')
 def show_form():
@@ -79,45 +96,45 @@ def post_form():
     auteur = request.form['auteur']
     date_publication = request.form['date_publication']
     paragraphe = request.form['paragraphe']
-    valide = true
+    valide = True
     dict_validation = {}
     # Validation du Titre
     if len(titre) == 0:
         dict_validation['titre'] = "Le titre est obligatoire."
-        valide = false
+        valide = False
     elif len(titre) > 100:
         dict_validation['titre'] = "Le titre doit être d'un maximum de 100 caractère."
-        valide = false
+        valide = False
     else:
         dict_validation['titre'] = "Valide"
     # Validation de l'Identifiant
     if len(identifiant) == 0:
         dict_validation['identifiant'] = "L'identifiant est obligatoire."
-        valide = false
+        valide = False
     elif len(identifiant) >= 50:
         dict_validation['identifiant'] = "L'identifiant doit être d'un maximum de 50 caractère."
-        valide = false
+        valide = False
     elif re.match('[a-zA-Z_0-9]', identifiant):
         dict_validation['identifiant'] = "L'identifiant ne doit utiliser que les caractères alphanumériques ainsi que le souligné(_)."
-        valide = false
+        valide = False
     else:
         dict_validation['identifiant'] = 'Valide'
     # Validation de l'Auteur
     if len(auteur) == 0:
         dict_validation['auteur'] = "L'auteur est obligatoire."
-        valide = false
+        valide = False
     elif len(auteur) > 100:
         dict_validation['auteur'] = "L'auteur doit être d'un maximum de 100 caractère."
-        valide = false
+        valide = False
     else:
         dict_validation['auteur'] = 'Valide'
     # Validation du Paragraphe
     if len(paragraphe) == 0:
         dict_validation['paragraphe'] = "Le paragraphe est obligatoire."
-        valide = false
+        valide = False
     elif len(paragraphe) > 500:
         dict_validation['paragraphe'] = "Le paragraphe doit être d'un maximum de 500 caractère."
-        valide = false
+        valide = False
     else:
         dict_validation['paragraphe'] = 'Valide'
     # Validation de la Date de Publication
@@ -126,7 +143,7 @@ def post_form():
             datetime.datetime.strptime(date_text, '%Y-%m-%d')
         except ValueError:
             dict_validation['date_publication'] = "La date de publication n'est pas valide."
-            valide = false
+            valide = False
     # Traitement selon validation
     if valide:
         statut = get_db().set_nouvel_article_admin(titre, identifiant, auteur,
@@ -138,8 +155,8 @@ def post_form():
     else:
         response = make_response(render_template('admin-nouveau.html', 
                                                  erreur=dict_validation))
-        response.set_cookie("nom", nom)
-        response.set_cookie("prenom", prenom)
+        response.set_cookie("titre", titre)
+        response.set_cookie("auteur", auteur)
         response.set_cookie("identifiant", identifiant)
         response.set_cookie("date_validation", date_validation)
         response.set_cookie("paragraphe", paragraphe)
