@@ -32,14 +32,44 @@ def get_db():
     return g._database
 
 def validation(form, mode):
-    print form
     titre = form['titre']
-    identifiant = form['identifiant']
-    auteur = form['auteur']
-    date_publication = form['date_publication']
     paragraphe = form['paragraphe']
+    identifiant = form['identifiant']
     valide = True
     dict_validation = {}
+    if mode == 'insert':
+        auteur = form['auteur']
+        date_publication = form['date_publication']
+        # Validation de l'Identifiant
+        if len(identifiant) == 0:
+            dict_validation['identifiant'] = "L'identifiant est obligatoire."
+            valide = False
+        elif len(identifiant) >= 50:
+            dict_validation['identifiant'] = u"L'identifiant doit être d'un maximum de 50 caractères."
+            valide = False
+        elif re.match('[a-zA-Z_0-9]', identifiant):
+            dict_validation['identifiant'] = u"L'identifiant ne doit utiliser que les caractères alphanumériques ainsi que le souligné(_)."
+            valide = False
+        else:
+            dict_validation['identifiant'] = 'Valide'
+        # Validation de l'Auteur
+        if len(auteur) == 0:
+            dict_validation['auteur'] = "L'auteur est obligatoire."
+            valide = False
+        elif len(auteur) > 100:
+            dict_validation['auteur'] = u"L'auteur doit être d'un maximum de 100 caractères."
+            valide = False
+        else:
+            dict_validation['auteur'] = 'Valide'
+        # Validation de la Date de Publication
+        if len(date_publication) == 10:
+            dict_validation['date_publication'] = 'Valide'
+            try:
+                datetime.datetime.strptime(date_publication, '%Y-%m-%d')
+            except ValueError:
+                dict_validation['date_publication'] = "La date de publication n'est pas valide."
+                valide = False
+
     # Validation du Titre
     if len(titre) == 0:
         dict_validation['titre'] = "Le titre est obligatoire."
@@ -49,27 +79,6 @@ def validation(form, mode):
         valide = False
     else:
         dict_validation['titre'] = "Valide"
-    # Validation de l'Identifiant
-    if len(identifiant) == 0:
-        dict_validation['identifiant'] = "L'identifiant est obligatoire."
-        valide = False
-    elif len(identifiant) >= 50:
-        dict_validation['identifiant'] = u"L'identifiant doit être d'un maximum de 50 caractères."
-        valide = False
-    elif re.match('[a-zA-Z_0-9]', identifiant):
-        dict_validation['identifiant'] = u"L'identifiant ne doit utiliser que les caractères alphanumériques ainsi que le souligné(_)."
-        valide = False
-    else:
-        dict_validation['identifiant'] = 'Valide'
-    # Validation de l'Auteur
-    if len(auteur) == 0:
-        dict_validation['auteur'] = "L'auteur est obligatoire."
-        valide = False
-    elif len(auteur) > 100:
-        dict_validation['auteur'] = u"L'auteur doit être d'un maximum de 100 caractères."
-        valide = False
-    else:
-        dict_validation['auteur'] = 'Valide'
     # Validation du Paragraphe
     if len(paragraphe) == 0:
         dict_validation['paragraphe'] = "Le paragraphe est obligatoire."
@@ -79,37 +88,31 @@ def validation(form, mode):
         valide = False
     else:
         dict_validation['paragraphe'] = 'Valide'
-    # Validation de la Date de Publication
-    if len(date_publication) == 10:
-        dict_validation['date_publication'] = 'Valide'
-        print "hole"
-        try:
-            print "nugget"
-            datetime.datetime.strptime(date_publication, '%Y-%m-%d')
-            print "butt"
-        except ValueError:
-            dict_validation['date_publication'] = "La date de publication n'est pas valide."
-            valide = False
+    
     # Traitement selon validation
-    print " Valide = {0}".format(valide)
     if valide:
         if mode == 'insert':
             statut = get_db().set_nouvel_article_admin(titre, identifiant, auteur,date_publication, paragraphe)
         elif mode == 'update':
-            statut = get_db().set_mise_a_jour_article_admin(self, titre, paragraphe, identifiant)
+            statut = get_db().set_mise_a_jour_article_admin(titre, paragraphe, identifiant)
 
         if statut == 0:
             return redirect('/admin')
         else:
             return render_template('erreur_de_mise_a_jour.html')
     else:
-        response = make_response(render_template('correctionArticle.html', titre="erreur", sous_titre="svp corriger",
+        if mode == 'update':
+            response = make_response(render_template('editionArticle.html', titre="erreur", sous_titre="svp corriger",
                                                  erreur=dict_validation, article=request.form))
-        response.set_cookie("titre", titre)
-        response.set_cookie("auteur", auteur)
-        response.set_cookie("identifiant", identifiant)
-        response.set_cookie("date_validation", date_publication)
-        response.set_cookie("paragraphe", paragraphe)
+        else:
+            response = make_response(render_template('correctionArticle.html', titre="erreur", sous_titre="svp corriger",
+                                                 erreur=dict_validation, article=request.form))
+        
+        # response.set_cookie("titre", titre)
+        # response.set_cookie("auteur", auteur)
+        # response.set_cookie("identifiant", identifiant)
+        # response.set_cookie("date_validation", date_publication)
+        # response.set_cookie("paragraphe", paragraphe)
 
         return response
 
@@ -138,7 +141,6 @@ def get_article_identifiant(identifiant):
 @app.route('/edition/<identifiant>')
 def get_article_edition(identifiant):
     article = get_db().get_article_identifiant_admin(identifiant)
-    print article
     if article == None:
         return redirect('/erreur')
     else:
@@ -170,7 +172,7 @@ def close_connection(exception):
 def page_admin():
     articles = get_db().get_tous_articles_pour_page_admin()
     return render_template('admin.html', titre="Administration",
-                           sous_titre=u"Gêrez votre site directement de cette page",
+                           sous_titre=u"Gérez votre site directement de cette page",
                            articles=articles)
 
 @app.route('/admin-nouveau')
@@ -185,12 +187,11 @@ def page_ajout():
 
 @app.route('/edition-article', methods=['POST'])
 def page_edition():
-    article = get_db().get_article_identifiant_admin(identifiant)
-    form = request.form
-    article.titre = form.titre
-    article.paragraphe = form.paragraphe
+    article = get_db().get_article_identifiant_admin(request.form['identifiant'])
+    article['titre'] = request.form['titre']
+    article['paragraphe'] = request.form['paragraphe']
     mode = "update"
-    return validation(request.form, mode)
+    return validation(article, mode)
 
 if __name__ == '__main__':
     app.run(debug=True)
