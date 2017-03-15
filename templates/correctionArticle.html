@@ -1,0 +1,56 @@
+{% extends "HeaderFooter.html" %}
+{% block content %}
+<div class="container">
+    <form action="/ajout-article" method="post">
+        <div class="form-group">
+            {% if erreur.titre in 'Valide' %}
+            <label for="titre">Titre :</label>
+            <input type="text" class="form-control valide" id="titre" name="titre" value='{{ article.titre }}' required/>
+            {% else %}
+            <label for="titre" style="color=red">Titre : *{{ erreur.titre }}</label>
+            <input type="text" class="form-control error" id="titre" name="titre" value='{{ article.titre }}' required/>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {% if erreur.identifiant in 'Valide' %}
+            <label class="control-label" for="identifiant">Identifiant :</label>
+            <input type="text" class="form-control valide" id="identifiant" name="identifiant" value='{{ article.identifiant }}' required />
+            {% else %}
+            <label class="control-label" style="color:red" for="identifiant">Identifiant : *{{ erreur.identifiant }}</label>
+            <input type="text" class="error form-control" id="identifiant" name="identifiant" value='{{ article.identifiant }}' required />
+            {% endif %}
+            
+        </div>
+        <div class="form-group">
+            {% if erreur.auteur in 'Valide' %}
+            <label for="auteur">Auteur :</label>
+            <input type="text" class="form-control valide" id="auteur" name="auteur" value='{{ article.auteur }}' required/>
+            {% else %}
+            <label for="auteur">Auteur : {{ erreur.auteur }}</label>
+            <input type="text" class="form-control error" id="auteur" name="auteur" value='{{ article.auteur }}' required/>
+            {% endif %}
+            </div>
+        <div class="form-group">
+            {% if erreur.date_publication in 'Valide' %}
+            <label for="date_publication">Date de publication :</label>
+            <input type="text" class="form-control valide" id="date_publication" name="date_publication" placeholder="AAAA-MM-JJ" value='{{ article.date_publication }}' required />
+            {% else %}
+            <label for="date_publication">Date de publication : {{ erreur.date_publication }}</label>
+            <input type="text" class="form-control error" id="date_publication" name="date_publication" placeholder="AAAA-MM-JJ" value='{{ article.date_publication }}' required />
+            {% endif %}
+            </div>
+        <div class="form-group">
+            {% if erreur.paragraphe in 'Valide' %}
+            <label for="paragraphe">Paragraphe :</label>
+            <textarea class="form-control valide" id="paragraphe" name="paragraphe" required>{{ article.paragraphe }}</textarea>
+            {% else %}
+            <label for="paragraphe">Paragraphe : {{ erreur.paragraphe }}</label>
+            <textarea class="form-control error" id="paragraphe" name="paragraphe" required>{{ article.paragraphe }}</textarea>
+            {% endif %}
+                    </div>
+		<div class="form-group">
+            <input type="submit" value="Enregistrer"/>
+        </div>
+    </form>
+</div>
+{% endblock %}

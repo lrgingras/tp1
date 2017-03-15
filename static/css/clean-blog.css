@@ -215,8 +215,17 @@ hr.small {
     font-size: 30px;
   }
 }
-input.error{
+input.error {
 	box-shadow: 10px 10px red;
+}
+input.valide {
+	box-shadow: 10px 10px limegreen;
+}
+textarea.error {
+	box-shadow: 10px 10px red;
+}
+textarea.valide {
+	box-shadow: 10px 10px limegreen;
 }
 .post-preview > a {
   color: #333333;
@@ -300,7 +309,6 @@ footer .copyright {
   border-radius: 0;
   font-size: 1.5em;
   background: none;
-  box-shadow: none !important;
   resize: none;
 }
 .floating-label-form-group label {

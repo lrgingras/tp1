@@ -20,6 +20,7 @@ from flask import make_response
 from flask import g
 from flask import redirect
 from flask import request
+import datetime
 import re
 from database import Database
 app = Flask(__name__)
@@ -29,6 +30,88 @@ def get_db():
     if db is None:
         g._database = Database()
     return g._database
+
+def validation(form, mode):
+    print form
+    titre = form['titre']
+    identifiant = form['identifiant']
+    auteur = form['auteur']
+    date_publication = form['date_publication']
+    paragraphe = form['paragraphe']
+    valide = True
+    dict_validation = {}
+    # Validation du Titre
+    if len(titre) == 0:
+        dict_validation['titre'] = "Le titre est obligatoire."
+        valide = False
+    elif len(titre) > 100:
+        dict_validation['titre'] = u"Le titre doit être d'un maximum de 100 caractères."
+        valide = False
+    else:
+        dict_validation['titre'] = "Valide"
+    # Validation de l'Identifiant
+    if len(identifiant) == 0:
+        dict_validation['identifiant'] = "L'identifiant est obligatoire."
+        valide = False
+    elif len(identifiant) >= 50:
+        dict_validation['identifiant'] = u"L'identifiant doit être d'un maximum de 50 caractères."
+        valide = False
+    elif re.match('[a-zA-Z_0-9]', identifiant):
+        dict_validation['identifiant'] = u"L'identifiant ne doit utiliser que les caractères alphanumériques ainsi que le souligné(_)."
+        valide = False
+    else:
+        dict_validation['identifiant'] = 'Valide'
+    # Validation de l'Auteur
+    if len(auteur) == 0:
+        dict_validation['auteur'] = "L'auteur est obligatoire."
+        valide = False
+    elif len(auteur) > 100:
+        dict_validation['auteur'] = u"L'auteur doit être d'un maximum de 100 caractères."
+        valide = False
+    else:
+        dict_validation['auteur'] = 'Valide'
+    # Validation du Paragraphe
+    if len(paragraphe) == 0:
+        dict_validation['paragraphe'] = "Le paragraphe est obligatoire."
+        valide = False
+    elif len(paragraphe) > 500:
+        dict_validation['paragraphe'] = u"Le paragraphe doit être d'un maximum de 500 caractères."
+        valide = False
+    else:
+        dict_validation['paragraphe'] = 'Valide'
+    # Validation de la Date de Publication
+    if len(date_publication) == 10:
+        dict_validation['date_publication'] = 'Valide'
+        print "hole"
+        try:
+            print "nugget"
+            datetime.datetime.strptime(date_publication, '%Y-%m-%d')
+            print "butt"
+        except ValueError:
+            dict_validation['date_publication'] = "La date de publication n'est pas valide."
+            valide = False
+    # Traitement selon validation
+    print " Valide = {0}".format(valide)
+    if valide:
+        if mode == 'insert':
+            statut = get_db().set_nouvel_article_admin(titre, identifiant, auteur,date_publication, paragraphe)
+        elif mode == 'update':
+            statut = get_db().set_mise_a_jour_article_admin(self, titre, paragraphe, identifiant)
+
+        if statut == 0:
+            return redirect('/admin')
+        else:
+            return render_template('erreur_de_mise_a_jour.html')
+    else:
+        response = make_response(render_template('correctionArticle.html', titre="erreur", sous_titre="svp corriger",
+                                                 erreur=dict_validation, article=request.form))
+        response.set_cookie("titre", titre)
+        response.set_cookie("auteur", auteur)
+        response.set_cookie("identifiant", identifiant)
+        response.set_cookie("date_validation", date_publication)
+        response.set_cookie("paragraphe", paragraphe)
+
+        return response
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -40,17 +123,27 @@ def page_accueil():
     limite='5'
     articles = get_db().get_article_limite(limite)
     return render_template('index.html', titre="Acceuil",
-                           sous_titre="Pour les amoureux du simple et efficace",
+                           sous_titre=u"Pour les amoureux de la simplicié",
                            articles=articles)
 
 @app.route('/article/<identifiant>')
 def get_article_identifiant(identifiant):
-    articles = get_db().get_article_identifiant(identifiant)
-    if len(articles) == 0:
-        return render_template('404.html')
+    article = get_db().get_article_identifiant(identifiant)
+    if article == None:
+        return redirect('/erreur')
     else:
-        return render_template('liste.html', titre=articles[0]['titre'],
-                           sous_titre=articles[0]['auteur'] + ' (' + articles[0]['date_publication'] + ')', articles=articles)
+        return render_template('liste.html', titre=article['titre'],
+                           sous_titre=article['auteur'] + ' (' + article['date_publication'] + ')', article=article)
+
+@app.route('/edition/<identifiant>')
+def get_article_edition(identifiant):
+    article = get_db().get_article_identifiant_admin(identifiant)
+    print article
+    if article == None:
+        return redirect('/erreur')
+    else:
+        return render_template('editionArticle.html', titre=u'Édition',
+                           sous_titre=article['titre'], article=article)
 
 @app.route('/recherche')
 def get_recherche_article():
@@ -76,87 +169,28 @@ def close_connection(exception):
 @app.route('/admin')
 def page_admin():
     articles = get_db().get_tous_articles_pour_page_admin()
-    return render_template('index.html', titre="Administration",
-                           sous_titre="Gerez votre site directement de cette page",
+    return render_template('admin.html', titre="Administration",
+                           sous_titre=u"Gêrez votre site directement de cette page",
                            articles=articles)
 
 @app.route('/admin-nouveau')
 def show_form():
     return render_template('article.html',titre="Nouvel article")
 
-
 @app.route('/ajout-article', methods=['POST'])
-def post_form():
-    titre = request.form['titre']
-    identifiant = request.form['identifiant']
-    auteur = request.form['auteur']
-    date_publication = request.form['date_publication']
-    paragraphe = request.form['paragraphe']
-    valide = True
-    dict_validation = {}
-    # Validation du Titre
-    if len(titre) == 0:
-        dict_validation['titre'] = "Le titre est obligatoire."
-        valide = False
-    elif len(titre) > 100:
-        dict_validation['titre'] = "Le titre doit être d'un maximum de 100 caractère."
-        valide = False
-    else:
-        dict_validation['titre'] = "Valide"
-    # Validation de l'Identifiant
-    if len(identifiant) == 0:
-        dict_validation['identifiant'] = "L'identifiant est obligatoire."
-        valide = False
-    elif len(identifiant) >= 50:
-        dict_validation['identifiant'] = "L'identifiant doit être d'un maximum de 50 caractère."
-        valide = False
-    elif re.match('[a-zA-Z_0-9]', identifiant):
-        dict_validation['identifiant'] = "L'identifiant ne doit utiliser que les caractères alphanumériques ainsi que le souligné(_)."
-        valide = False
-    else:
-        dict_validation['identifiant'] = 'Valide'
-    # Validation de l'Auteur
-    if len(auteur) == 0:
-        dict_validation['auteur'] = "L'auteur est obligatoire."
-        valide = False
-    elif len(auteur) > 100:
-        dict_validation['auteur'] = "L'auteur doit être d'un maximum de 100 caractère."
-        valide = False
-    else:
-        dict_validation['auteur'] = 'Valide'
-    # Validation du Paragraphe
-    if len(paragraphe) == 0:
-        dict_validation['paragraphe'] = "Le paragraphe est obligatoire."
-        valide = False
-    elif len(paragraphe) > 500:
-        dict_validation['paragraphe'] = "Le paragraphe doit être d'un maximum de 500 caractère."
-        valide = False
-    else:
-        dict_validation['paragraphe'] = 'Valide'
-    # Validation de la Date de Publication
-    if len(date_publication) == 10:
-        try:
-            datetime.datetime.strptime(date_text, '%Y-%m-%d')
-        except ValueError:
-            dict_validation['date_publication'] = "La date de publication n'est pas valide."
-            valide = False
-    # Traitement selon validation
-    if valide:
-        statut = get_db().set_nouvel_article_admin(titre, identifiant, auteur,
-                                                  date_publication, paragraphe)
-        if statut == 0:
-            return redirect('/admin')
-        else:
-            return render_template('erreur_de_mise_a_jour.html')
-    else:
-        response = make_response(render_template('article.html', 
-                                                 erreur=dict_validation))
-        response.set_cookie("titre", titre)
-        response.set_cookie("auteur", auteur)
-        response.set_cookie("identifiant", identifiant)
-        response.set_cookie("date_validation", date_validation)
-        response.set_cookie("paragraphe", paragraphe)
-        return response
+def page_ajout():
+    request = request
+    mode = "insert"
+    return validation(request,mode)
+
+@app.route('/edition-article', methods=['POST'])
+def page_edition():
+    article = get_db().get_article_identifiant_admin(identifiant)
+    form = request.form
+    article.titre = form.titre
+    article.paragraphe = form.paragraphe
+    mode = "update"
+    return validation(request.form, mode)
 
 if __name__ == '__main__':
     app.run(debug=True)

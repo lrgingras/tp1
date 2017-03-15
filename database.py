@@ -74,7 +74,9 @@ class Database:
                        "where date_publication <= date('now','localtime') and "
                        "      (identifiant = ?)",
                        [identifiant])
-        return build_dictionary_list(cursor)
+        if cursor.rowcount == 0:
+            return None
+        return build_dictionary_list(cursor)[0]
 
     # UTILISATION UNIQUEMENT POUR LES PAGES D'ADMINISTRATION
     # Requête qui retourne tous les enregistrements, incluant ceux ayant une
@@ -96,7 +98,9 @@ class Database:
                        "from article "
                        "where identifiant = ?",
                        [identifiant])
-        return build_dictionary_list(cursor)
+        if cursor.rowcount == 0:
+            return None
+        return build_dictionary_list(cursor)[0]
 
     # UTILISATION UNIQUEMENT POUR LES PAGES D'ADMINISTRATION
     # Requête de mise à jour des articles.

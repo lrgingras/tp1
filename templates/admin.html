@@ -2,16 +2,18 @@
 {% block content %}
     <!-- Main Content -->
     <div class="container">
-		<br/>
-		<hr/>
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-preview">
-                    <h2 class="titre-article">
-                        <h3 class="sous-titre-article">{{ article.paragraphe }}</h3>  </p>
-                        <h4 class="sous-titre-article">{{ 'Ref: ' + article.identifiant }}</h4>  
-                    </h2>
-                    <hr/>
+                    {% for article in articles %}
+                        <h2 class="titre-article">
+                            <li><a href="/edition/{{ article.identifiant }}">{{ article.titre }}</a></li>
+                        </h2>
+                        <h3 class="sous-titre-article">
+                            {{ article.date_publication }}
+                        </h3>  
+                        <hr/>
+                    {% endfor %}
                 </div>
                 <!-- Pager -->
                 <!-- <ul class="pager">

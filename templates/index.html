@@ -2,36 +2,33 @@
 {% block content %}
     <!-- Main Content -->
     <div class="container">
-        {% if titre in 'Acceuil' %}
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    <form action="/recherche" method="get">
-                        <input type="text" id="valeur_recherche" name="valeur_recherche" class="col-sm-10"></input>
-                        <input type="submit" id="submit" value="recherche"></input>
-                    </form>
-                </div>  
-            <hr>
-            <div/>
-        {% endif %}
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <form action="/recherche" method="get">
+                    <input type="text" id="valeur_recherche" name="valeur_recherche" class="col-sm-10"></input>
+                    <input type="submit" id="submit" value="recherche"></input>
+                </form>
+            </div>  
+        <div/>
 		<br/>
 		<hr/>
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-preview">
                     {% for article in articles %}
-                        <h2 class="titre-article">
-                            {% if titre in 'Acceuil' %}
-                                <a href="/article/{{ article.identifiant }}"><li>{{ article.titre }}</a>
-                            {% endif %}
-                            {% if titre in 'Administration Recherche' %}
-                                <a href="/article/{{ article.identifiant }}"><li>{{ article.titre }}</a>
-                            {% endif %}
-                            <h3 class="sous-titre-article">
-                                {{ article.date_publication }}
-                            </h3>  
-                        </li>
-                        </h2>
-                        <hr/>
+                    <h2 class="titre-article">
+                        {{ article.titre }}
+                    </h2> 
+                    <h4>
+                        {{ article.paragraphe }}
+                    </h4>
+                    <h3 class="sous-titre-article">
+                         {{ article.auteur }} / {{ article.date_publication }}
+                    </h3> 
+                    <h4>
+                        ref.  {{ article.identifiant }}
+                    </h4>
+                    <hr/>
                     {% endfor %}
                 </div>
                 <!-- Pager -->

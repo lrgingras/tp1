@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
 
@@ -58,9 +58,11 @@
                     <li>
                         <a href="/admin">Administration</a>
                     </li>
+                    {% if titre in 'Administration' %}
                     <li>
                         <a href="/admin-nouveau">Ajout d'article</a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
