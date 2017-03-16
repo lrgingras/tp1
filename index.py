@@ -45,10 +45,14 @@ def validation(form, mode):
             dict_validation['identifiant'] = "L'identifiant est obligatoire."
             valide = False
         elif len(identifiant) > 50:
-            dict_validation['identifiant'] = u"L'identifiant doit être d'un maximum de 50 caractères."
+            dict_validation['identifiant'] = (u"L'identifiant doit être d'un "
+                                              u"maximum de 50 caractères.")
             valide = False
         elif not re.match('[a-zA-Z_0-9]', identifiant):
-            dict_validation['identifiant'] = u"L'identifiant ne doit utiliser que les caractères alphanumériques ainsi que le souligné(_)."
+            dict_validation['identifiant'] = (u"L'identifiant ne doit utiliser"
+                                              u" que les caractères "
+                                              u"alphanumériques ainsi que le "
+                                              u"souligné(_).")
             valide = False
         else:
             dict_validation['identifiant'] = 'Valide'
@@ -57,28 +61,33 @@ def validation(form, mode):
             dict_validation['auteur'] = "L'auteur est obligatoire."
             valide = False
         elif len(auteur) > 100:
-            dict_validation['auteur'] = u"L'auteur doit être d'un maximum de 100 caractères."
+            dict_validation['auteur'] = (u"L'auteur doit être d'un maximum de"
+                                         u" 100 caractères.")
             valide = False
         else:
             dict_validation['auteur'] = 'Valide'
         # Validation de la Date de Publication
-        dict_validation['date_publication'] = "La date de publication n'est pas valide."
-        valide = False
         if len(date_publication) == 10:
             try:
                 datetime.datetime.strptime(date_publication, '%Y-%m-%d')
                 dict_validation['date_publication'] = 'Valide'
                 valide = True
             except ValueError:
-                dict_validation['date_publication'] = "La date de publication n'est pas valide."
+                dict_validation['date_publication'] = ("La date de publication"
+                                                       "n'est pas valide.")
                 valide = False
+        else:
+            dict_validation['date_publication'] = ("La date de publication "
+                                                   "n'est pas valide.")
+            valide = False
 
     # Validation du Titre
     if len(titre) == 0:
         dict_validation['titre'] = "Le titre est obligatoire."
         valide = False
     elif len(titre) > 100:
-        dict_validation['titre'] = u"Le titre doit être d'un maximum de 100 caractères."
+        dict_validation['titre'] = (u"Le titre doit être d'un maximum de 100 "
+                                    u"caractères.")
         valide = False
     else:
         dict_validation['titre'] = "Valide"
@@ -87,7 +96,8 @@ def validation(form, mode):
         dict_validation['paragraphe'] = "Le paragraphe est obligatoire."
         valide = False
     elif len(paragraphe) > 500:
-        dict_validation['paragraphe'] = u"Le paragraphe doit être d'un maximum de 500 caractères."
+        dict_validation['paragraphe'] = (u"Le paragraphe doit être d'un "
+                                         u"maximum de 500 caractères.")
         valide = False
     else:
         dict_validation['paragraphe'] = 'Valide'
@@ -105,16 +115,23 @@ def validation(form, mode):
         if statut == 0:
             return redirect('/admin')
         else:
-            dict_validation['identifiant'] = u"Cet identifiant est déjà utilisé."
-            return render_template('correctionArticle.html', titre="Erreur", sous_titre="svp corriger",
-                                                 erreur=dict_validation, article=request.form)
+            dict_validation['identifiant'] = (u"Cet identifiant est déjà "
+                                              u"utilisé.")
+            return render_template('correctionArticle.html', titre="Erreur",
+                                   sous_titre = "svp corriger",
+                                   erreur=dict_validation,
+                                   article=request.form)
     else:
         if mode == 'update':
-            return render_template('editionArticle.html', titre="Erreur", sous_titre="svp corriger",
-                                                 erreur=dict_validation, article=request.form)
+            return render_template('editionArticle.html', titre="Erreur", 
+                                   sous_titre="svp corriger",
+                                   erreur=dict_validation, 
+                                   article=request.form)
         else:
-            return render_template('correctionArticle.html', titre="Erreur", sous_titre="svp corriger",
-                                                 erreur=dict_validation, article=request.form)
+            return render_template('correctionArticle.html', titre="Erreur", 
+                                   sous_titre="svp corriger",
+                                   erreur=dict_validation, 
+                                   article=request.form)
         return response
 
 @app.errorhandler(404)
@@ -137,7 +154,9 @@ def get_article_identifiant(identifiant):
         return redirect('/erreur')
     else:
         return render_template('liste.html', titre=article['titre'],
-                           sous_titre=article['auteur'] + ' (' + article['date_publication'] + ')', article=article)
+                               sous_titre=article['auteur'] + ' (' +
+                               article['date_publication'] + ')',
+                               article=article)
 
 @app.route('/edition/<identifiant>')
 def get_article_edition(identifiant):
@@ -154,13 +173,20 @@ def get_recherche_article():
     articles = get_db().get_recherche_article(valeur_recherche)
     if len(articles) == 0:
         return render_template('aucun_article.html', titre="Aucun article",
-                           sous_titre= u"Aucun article ne contient le mot clef : {0}".format(valeur_recherche))
+                               sous_titre= (u"Aucun article ne contient le "
+                                            u"mot clef : "
+                                            u"{0}").format(valeur_recherche))
     else:
         if len(articles) == 1:
-            sous_titre = u"1 article contient votre mot clef : {0}".format(valeur_recherche)
+            sous_titre = (u"1 article contient votre mot clef : "
+                          u"{0}").format(valeur_recherche)
         else:
-            sous_titre = u"{0} articles contiennent votre mot clef : {1}".format(len(articles), valeur_recherche)
-        return render_template('rechercheArticles.html',titre="Recherche", sous_titre=sous_titre, valeur_recherche=valeur_recherche, articles=articles)
+            sous_titre = (u"{0} articles contiennent votre mot clef : "
+                          u"{1}").format(len(articles), valeur_recherche)
+        return render_template('rechercheArticles.html',titre="Recherche", 
+                               sous_titre=sous_titre, 
+                               valeur_recherche=valeur_recherche, 
+                               articles=articles)
         
         
 @app.teardown_appcontext
@@ -173,7 +199,8 @@ def close_connection(exception):
 def page_admin():
     articles = get_db().get_tous_articles_pour_page_admin()
     return render_template('admin.html', titre="Administration",
-                           sous_titre=u"Gérez votre site directement de cette page",
+                           sous_titre=(u"Gérez votre site directement de "
+                                       u"cette page"),
                            articles=articles)
 
 @app.route('/admin-nouveau')
@@ -187,7 +214,8 @@ def page_ajout():
 
 @app.route('/edition-article', methods=['POST'])
 def page_edition():
-    article = get_db().get_article_identifiant_admin(request.form['identifiant'])
+    db = get_db()
+    article = db.get_article_identifiant_admin(request.form['identifiant'])
     article['titre'] = request.form['titre']
     article['paragraphe'] = request.form['paragraphe']
     mode = "update"
