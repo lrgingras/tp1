@@ -58,7 +58,8 @@ class Database:
     # Requête basé sur une recherche partiel sur les champs titre ou paragraphe
     def get_recherche_article(self, valeur_recherche):
         cursor = self.get_connection().cursor()
-        cursor.execute("select titre, date_publication, identifiant from article "
+        cursor.execute("select titre, date_publication, identifiant "
+                       "from article "
                        "where date_publication <= date('now','localtime') and "
                        "      (titre like ? or paragraphe like ?) "
                        "Order by date_publication Desc",
@@ -72,11 +73,13 @@ class Database:
                        "       date_publication, paragraphe "
                        "from article "
                        "where date_publication <= date('now','localtime') and "
-                       "      (identifiant = ?)",
+                       "      identifiant = ?",
                        [identifiant])
-        if cursor.rowcount == 0:
+        dictionary = build_dictionary_list(cursor)
+        if len(dictionary) == 0:
             return None
-        return build_dictionary_list(cursor)[0]
+        else:
+            return dictionary[0]
 
     # UTILISATION UNIQUEMENT POUR LES PAGES D'ADMINISTRATION
     # Requête qui retourne tous les enregistrements, incluant ceux ayant une

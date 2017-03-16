@@ -3,12 +3,15 @@
 <div class="container">
     <form action="/edition-article" method="post">
         <div class="form-group">
-            {% if erreur.titre in 'Valide' %}
-            <label for="titre">Titre :</label>
-            <input type="text" class="form-control valide" id="titre" name="titre" value='{{ article.titre }}' required/>
+            {% if titre not in 'Erreur' %}
+                <label for="titre">Titre :</label>
+                <input type="text" class="form-control" id="titre" name="titre" value='{{ article.titre }}' required/>
+            {%  elif erreur.titre in 'Valide' %}
+                <label for="titre">Titre :</label>
+                <input type="text" class="form-control valide" id="titre" name="titre" value='{{ article.titre }}' required/>
             {% else %}
-            <label for="titre" style="color:darkred">Titre : *{{ erreur.titre }}</label>
-            <input type="text" class="form-control error" id="titre" name="titre" value='{{ article.titre }}' required/>
+                <label for="titre" style="color:darkred">Titre : *{{ erreur.titre }}</label>
+                <input type="text" class="form-control error" id="titre" name="titre" value='{{ article.titre }}' required/>
             {% endif %}
         </div>
         <div class="form-group" >
@@ -24,12 +27,15 @@
             <input type="date" class="form-control" id="date_publication" style="display :none;" name="date_publication" value="{{ article.date_publication }}"  required />
         </div>
         <div class="form-group">
-            {% if erreur.paragraphe in 'Valide' %}
-            <label for="paragraphe">Paragraphe :</label>
-            <textarea class="form-control valide" id="paragraphe" name="paragraphe" required>{{ article.paragraphe }}</textarea>
+            {% if titre not in 'Erreur' %}
+                <label for="paragraphe">Paragraphe :</label>
+                <textarea class="form-control " id="paragraphe" name="paragraphe" required>{{ article.paragraphe }}</textarea>
+            {% elif erreur.paragraphe in 'Valide' %}
+                <label for="paragraphe">Paragraphe :</label>
+                <textarea class="form-control valide" id="paragraphe" name="paragraphe" required>{{ article.paragraphe }}</textarea>
             {% else %}
-            <label for="paragraphe" style="color:darkred" >Paragraphe : {{ erreur.paragraphe }}</label>
-            <textarea class="form-control error" id="paragraphe" name="paragraphe" required>{{ article.paragraphe }}</textarea>
+                <label for="paragraphe" style="color:darkred" >Paragraphe : {{ erreur.paragraphe }}</label>
+                <textarea class="form-control error" id="paragraphe" name="paragraphe" required>{{ article.paragraphe }}</textarea>
             {% endif %}
         </div>
 		<div class="form-group">

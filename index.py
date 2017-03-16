@@ -44,10 +44,10 @@ def validation(form, mode):
         if len(identifiant) == 0:
             dict_validation['identifiant'] = "L'identifiant est obligatoire."
             valide = False
-        elif len(identifiant) >= 50:
+        elif len(identifiant) > 50:
             dict_validation['identifiant'] = u"L'identifiant doit être d'un maximum de 50 caractères."
             valide = False
-        elif re.match('[a-zA-Z_0-9]', identifiant):
+        elif not re.match('[a-zA-Z_0-9]', identifiant):
             dict_validation['identifiant'] = u"L'identifiant ne doit utiliser que les caractères alphanumériques ainsi que le souligné(_)."
             valide = False
         else:
@@ -92,28 +92,26 @@ def validation(form, mode):
     # Traitement selon validation
     if valide:
         if mode == 'insert':
-            statut = get_db().set_nouvel_article_admin(titre, identifiant, auteur,date_publication, paragraphe)
+            statut = get_db().set_nouvel_article_admin(titre, identifiant,
+                                                       auteur,date_publication,
+                                                       paragraphe)
         elif mode == 'update':
-            statut = get_db().set_mise_a_jour_article_admin(titre, paragraphe, identifiant)
+            statut = get_db().set_mise_a_jour_article_admin(titre, paragraphe,
+                                                            identifiant)
 
         if statut == 0:
             return redirect('/admin')
         else:
-            return render_template('erreur_de_mise_a_jour.html')
+            dict_validation['identifiant'] = u"Cet identifiant est déjà utilisé."
+            return render_template('correctionArticle.html', titre="Erreur", sous_titre="svp corriger",
+                                                 erreur=dict_validation, article=request.form)
     else:
         if mode == 'update':
-            response = make_response(render_template('editionArticle.html', titre="erreur", sous_titre="svp corriger",
-                                                 erreur=dict_validation, article=request.form))
+            return render_template('editionArticle.html', titre="Erreur", sous_titre="svp corriger",
+                                                 erreur=dict_validation, article=request.form)
         else:
-            response = make_response(render_template('correctionArticle.html', titre="erreur", sous_titre="svp corriger",
-                                                 erreur=dict_validation, article=request.form))
-        
-        # response.set_cookie("titre", titre)
-        # response.set_cookie("auteur", auteur)
-        # response.set_cookie("identifiant", identifiant)
-        # response.set_cookie("date_validation", date_publication)
-        # response.set_cookie("paragraphe", paragraphe)
-
+            return render_template('correctionArticle.html', titre="Erreur", sous_titre="svp corriger",
+                                                 erreur=dict_validation, article=request.form)
         return response
 
 @app.errorhandler(404)
@@ -126,7 +124,7 @@ def page_accueil():
     limite='5'
     articles = get_db().get_article_limite(limite)
     return render_template('index.html', titre="Acceuil",
-                           sous_titre=u"Pour les amoureux de la simplicié",
+                           sous_titre=u"Pour les amoureux de la simplicité",
                            articles=articles)
 
 @app.route('/article/<identifiant>')
@@ -153,12 +151,12 @@ def get_recherche_article():
     articles = get_db().get_recherche_article(valeur_recherche)
     if len(articles) == 0:
         return render_template('aucun_article.html', titre="Aucun article",
-                           sous_titre="Aucun article ne correspond avec la recherche.")
+                           sous_titre= u"Aucun article ne contient le mot clef : {0}".format(valeur_recherche))
     else:
         if len(articles) == 1:
-            sous_titre = "1 article contient votre mot clef : {0}".format(valeur_recherche)
+            sous_titre = u"1 article contient votre mot clef : {0}".format(valeur_recherche)
         else:
-            sous_titre = "{0} articles contiennent votre mot clef : {1}".format(len(articles), valeur_recherche)
+            sous_titre = u"{0} articles contiennent votre mot clef : {1}".format(len(articles), valeur_recherche)
         return render_template('rechercheArticles.html',titre="Recherche", sous_titre=sous_titre, valeur_recherche=valeur_recherche, articles=articles)
         
         
@@ -177,13 +175,12 @@ def page_admin():
 
 @app.route('/admin-nouveau')
 def show_form():
-    return render_template('article.html',titre="Nouvel article")
+    return render_template('article.html', titre="Nouvel article")
 
 @app.route('/ajout-article', methods=['POST'])
 def page_ajout():
-    request = request
     mode = "insert"
-    return validation(request,mode)
+    return validation(request.form, mode)
 
 @app.route('/edition-article', methods=['POST'])
 def page_edition():
