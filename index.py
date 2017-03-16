@@ -62,10 +62,13 @@ def validation(form, mode):
         else:
             dict_validation['auteur'] = 'Valide'
         # Validation de la Date de Publication
+        dict_validation['date_publication'] = "La date de publication n'est pas valide."
+        valide = False
         if len(date_publication) == 10:
-            dict_validation['date_publication'] = 'Valide'
             try:
                 datetime.datetime.strptime(date_publication, '%Y-%m-%d')
+                dict_validation['date_publication'] = 'Valide'
+                valide = True
             except ValueError:
                 dict_validation['date_publication'] = "La date de publication n'est pas valide."
                 valide = False
