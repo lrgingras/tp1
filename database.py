@@ -52,7 +52,7 @@ class Database:
                        "from article "
                        "where date_publication <= date('now', 'localtime') "
                        "Order by date_publication Desc "
-                       "limit ?", ([limite]))
+                       "limit ?", [limite])
         return build_dictionary_list(cursor)
 
     # Requête basé sur une recherche partiel sur les champs titre ou paragraphe
@@ -111,7 +111,7 @@ class Database:
         cursor = self.get_connection().cursor()
         cursor.execute("select id  "
                        "from article "
-                       "where (identifiant = ?)",
+                       "where identifiant = ?",
                        [identifiant])
         data = cursor.fetchone()
         if data is None:
@@ -131,7 +131,7 @@ class Database:
         cursor = connexion.cursor()
         cursor.execute("select id  "
                        "from article "
-                       "where (identifiant = ?)",
+                       "where identifiant = ?",
                        [identifiant])
         data = cursor.fetchone()
         if data is None:
