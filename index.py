@@ -25,11 +25,13 @@ import re
 from database import Database
 app = Flask(__name__)
 
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         g._database = Database()
     return g._database
+
 
 def validation(form, mode):
     titre = form['titre']
@@ -101,12 +103,13 @@ def validation(form, mode):
         valide = False
     else:
         dict_validation['paragraphe'] = 'Valide'
-    
+
     # Traitement selon validation
     if valide:
         if mode == 'insert':
             statut = get_db().set_nouvel_article_admin(titre, identifiant,
-                                                       auteur,date_publication,
+                                                       auteur,
+                                                       date_publication,
                                                        paragraphe)
         elif mode == 'update':
             statut = get_db().set_mise_a_jour_article_admin(titre, paragraphe,
@@ -118,39 +121,42 @@ def validation(form, mode):
             dict_validation['identifiant'] = (u"Cet identifiant est déjà "
                                               u"utilisé.")
             return render_template('correctionArticle.html', titre="Erreur",
-                                   sous_titre = "svp corriger",
+                                   sous_titre="svp corriger",
                                    erreur=dict_validation,
                                    article=request.form)
     else:
         if mode == 'update':
-            return render_template('editionArticle.html', titre="Erreur", 
+            return render_template('editionArticle.html', titre="Erreur",
                                    sous_titre="svp corriger",
-                                   erreur=dict_validation, 
+                                   erreur=dict_validation,
                                    article=request.form)
         else:
-            return render_template('correctionArticle.html', titre="Erreur", 
+            return render_template('correctionArticle.html', titre="Erreur",
                                    sous_titre="svp corriger",
-                                   erreur=dict_validation, 
+                                   erreur=dict_validation,
                                    article=request.form)
         return response
+
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html', titre="404",
                            sous_titre="Cette page est introuvable."), 404
 
+
 @app.route('/')
 def page_accueil():
-    limite='5'
+    limite = '5'
     articles = get_db().get_article_limite(limite)
     return render_template('index.html', titre="Acceuil",
                            sous_titre=u"Pour les amoureux de la simplicité",
                            articles=articles)
 
+
 @app.route('/article/<identifiant>')
 def get_article_identifiant(identifiant):
     article = get_db().get_article_identifiant(identifiant)
-    if article == None:
+    if article is None:
         return redirect('/erreur')
     else:
         return render_template('liste.html', titre=article['titre'],
@@ -158,24 +164,26 @@ def get_article_identifiant(identifiant):
                                article['date_publication'] + ')',
                                article=article)
 
+
 @app.route('/edition/<identifiant>')
 def get_article_edition(identifiant):
     article = get_db().get_article_identifiant_admin(identifiant)
-    if article == None:
+    if article is None:
         return redirect('/erreur')
     else:
         return render_template('editionArticle.html', titre=u'Édition',
-                           sous_titre=article['titre'], article=article)
+                               sous_titre=article['titre'], article=article)
+
 
 @app.route('/recherche')
 def get_recherche_article():
-    valeur_recherche = request.args.get('valeur_recherche','')
+    valeur_recherche = request.args.get('valeur_recherche', '')
     articles = get_db().get_recherche_article(valeur_recherche)
     if len(articles) == 0:
         return render_template('aucun_article.html', titre="Aucun article",
-                               sous_titre= (u"Aucun article ne contient le "
-                                            u"mot clef : "
-                                            u"{0}").format(valeur_recherche))
+                               sous_titre=(u"Aucun article ne contient le "
+                                           u"mot clef : "
+                                           u"{0}").format(valeur_recherche))
     else:
         if len(articles) == 1:
             sous_titre = (u"1 article contient votre mot clef : "
@@ -183,17 +191,18 @@ def get_recherche_article():
         else:
             sous_titre = (u"{0} articles contiennent votre mot clef : "
                           u"{1}").format(len(articles), valeur_recherche)
-        return render_template('rechercheArticles.html',titre="Recherche", 
-                               sous_titre=sous_titre, 
-                               valeur_recherche=valeur_recherche, 
+        return render_template('rechercheArticles.html', titre="Recherche",
+                               sous_titre=sous_titre,
+                               valeur_recherche=valeur_recherche,
                                articles=articles)
-        
-        
+
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.disconnect()
+
 
 @app.route('/admin')
 def page_admin():
@@ -203,14 +212,17 @@ def page_admin():
                                        u"cette page"),
                            articles=articles)
 
+
 @app.route('/admin-nouveau')
 def show_form():
     return render_template('article.html', titre="Nouvel article")
+
 
 @app.route('/ajout-article', methods=['POST'])
 def page_ajout():
     mode = "insert"
     return validation(request.form, mode)
+
 
 @app.route('/edition-article', methods=['POST'])
 def page_edition():
@@ -223,4 +235,3 @@ def page_edition():
 
 if __name__ == '__main__':
     app.run(debug=True)
-       
