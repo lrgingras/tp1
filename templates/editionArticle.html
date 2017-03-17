@@ -16,15 +16,15 @@
         </div>
         <div class="form-group" >
             <label class="control-label" for="identifiant">Identifiant : {{ article.identifiant}}</label>
-            <input type="text" style="display :none;" class="form-control" id="identifiant" name="identifiant" value="{{ article.identifiant }}"  required />
+            <input type="text" style="display :none;" class="form-control" id="identifiant" name="identifiant" value="{{ article.identifiant }}"  />
         </div>
         <div class="form-group" >
             <label for="auteur">Auteur : {{ article.auteur }}</label>
-            <input type="text" class="form-control" style="display :none;" id="auteur" name="auteur" value="{{ article.auteur }}"  required/>
+            <input type="text" class="form-control" style="display :none;" id="auteur" name="auteur" value="{{ article.auteur }}" />
         </div>
         <div class="form-group">
             <label for="date_publication">Date de publication : {{ article.date_publication }}</label>
-            <input type="date" class="form-control" id="date_publication" style="display :none;" name="date_publication" value="{{ article.date_publication }}"  required />
+            <input type="date" class="form-control" id="date_publication" style="display :none;" name="date_publication" value="{{ article.date_publication }}"  />
         </div>
         <div class="form-group">
             {% if titre not in 'Erreur' %}
